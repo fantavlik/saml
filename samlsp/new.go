@@ -16,6 +16,7 @@ import (
 type Options struct {
 	EntityID            string
 	URL                 url.URL
+	AcsIndex            string
 	Key                 *rsa.PrivateKey
 	Certificate         *x509.Certificate
 	Intermediates       []*x509.Certificate
@@ -107,6 +108,7 @@ func DefaultServiceProvider(opts Options) saml.ServiceProvider {
 		Intermediates:      opts.Intermediates,
 		MetadataURL:        *metadataURL,
 		AcsURL:             *acsURL,
+		AcsIndex:           opts.AcsIndex,
 		SloURL:             *sloURL,
 		IDPMetadata:        opts.IDPMetadata,
 		ForceAuthn:         forceAuthn,
