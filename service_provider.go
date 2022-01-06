@@ -80,6 +80,10 @@ type ServiceProvider struct {
 	// on this host, i.e. https://example.com/saml/acs
 	AcsURL url.URL
 
+	// AcsIndex is the Index used to populate the AssertionConsumerServiceIndex
+	// SAMLRequest field for identity providers that support it
+	AcsIndex string
+
 	// SloURL is the full URL to the SAML Single Logout endpoint on this host.
 	// i.e. https://example.com/saml/slo
 	SloURL url.URL
@@ -405,6 +409,13 @@ func (sp *ServiceProvider) MakeAuthenticationRequest(idpURL string, binding stri
 			Format: &nameIDFormat,
 		},
 		ForceAuthn: sp.ForceAuthn,
+	}
+	if len(sp.AcsIndex) == 0 {
+		// If AcsIndex is specified, omit AssertionConsumerServiceURL and ProtocolBinding
+		// and instead populate AssertionConsumerServiceIndex
+		req.AssertionConsumerServiceURL = ""
+		req.ProtocolBinding = ""
+		req.AssertionConsumerServiceIndex = sp.AcsIndex
 	}
 	// We don't need to sign the XML document if the IDP uses HTTP-Redirect binding
 	if len(sp.SignatureMethod) > 0 && binding == HTTPPostBinding {
